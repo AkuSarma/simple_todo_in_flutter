@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.deepPurple.shade200,
       appBar: AppBar(
@@ -45,17 +44,32 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
       ),
-      body: ListView.builder(
-        itemCount: toDoList.length,
-        itemBuilder: (BuildContext context, index) {
-          return TodoList(
-            taskName: toDoList[index][0],
-            taskCompleted: toDoList[index][1],
-            onChanged: (value) => checkBoxChanged(index),
-            deleteFunction: (context) => deleteTask(index),
-          );
-        },
+      // Use SingleChildScrollView to allow scrolling when keyboard is visible
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context)
+                .viewInsets
+                .bottom), // Padding to avoid keyboard overlap
+        child: Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true, // Ensures list fits within the scrollable area
+              physics:
+                  NeverScrollableScrollPhysics(), // Prevent ListView from being scrollable independently
+              itemCount: toDoList.length,
+              itemBuilder: (BuildContext context, index) {
+                return TodoList(
+                  taskName: toDoList[index][0],
+                  taskCompleted: toDoList[index][1],
+                  onChanged: (value) => checkBoxChanged(index),
+                  deleteFunction: (context) => deleteTask(index),
+                );
+              },
+            ),
+          ],
+        ),
       ),
+      // Keep bottomNavigationBar for the input field
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -68,13 +82,13 @@ class _HomePageState extends State<HomePage> {
                   decoration: InputDecoration(
                     hintText: 'Add new todo items',
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Colors.white,
                       ),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Colors.white,
                       ),
                       borderRadius: BorderRadius.circular(15),
@@ -85,11 +99,13 @@ class _HomePageState extends State<HomePage> {
             ),
             FloatingActionButton(
               onPressed: savedNewTask,
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
             ),
           ],
         ),
       ),
+      // Enables the Scaffold to adjust when the keyboard appears
+      resizeToAvoidBottomInset: true,
     );
   }
 }
